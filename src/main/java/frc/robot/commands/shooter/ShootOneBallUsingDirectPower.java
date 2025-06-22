@@ -4,6 +4,7 @@
 
 package frc.robot.commands.shooter;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Loader;
 import frc.robot.subsystems.Shooter;
@@ -14,12 +15,15 @@ public class ShootOneBallUsingDirectPower extends CommandBase {
   private double mpower;
   private double mrpm;
   private boolean isDone = false;
+
+  private Timer timer;
   /** Creates a new ShootOneBallUsingDirectPower. */
   public ShootOneBallUsingDirectPower(Shooter shooter, Loader loader, double power, double rpm) {
     mshooter = shooter;
     mLoader = loader;
     mpower = power;
     mrpm = rpm;
+    timer = new Timer();
 
     addRequirements(mshooter);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -27,7 +31,9 @@ public class ShootOneBallUsingDirectPower extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    timer.reset();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -38,6 +44,7 @@ public class ShootOneBallUsingDirectPower extends CommandBase {
 
     if (Math.abs(mshooter.getVelocity()) >= mrpm && !mshooter.atSpeed()) {
       mshooter.atSpeed(true);
+      timer.start();
     }
 
     if (mshooter.atSpeed()) {
@@ -45,7 +52,10 @@ public class ShootOneBallUsingDirectPower extends CommandBase {
     }
     
     if(mshooter.atSpeed() && mLoader.getAppliedOutput() < 0) {
-      mshooter.currentWatch();
+      // mshooter.currentWatch(); unreliable
+      if (timer.hasElapsed(0.8)) {
+        mshooter.addBallShot();
+      }
     }
 
     if (mshooter.getBallsShot() == 1) {
