@@ -4,9 +4,7 @@
 
 package frc.robot.commands.commandGroups;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.loader.RunLoader;
 import frc.robot.subsystems.Intake;
@@ -18,8 +16,6 @@ import frc.robot.subsystems.Loader;
 public class MoveBallFromIntakeToShooter extends ParallelCommandGroup {
   /** Creates a new MoveBallFromIntakeToShooter. */
   public MoveBallFromIntakeToShooter(Loader loader, Intake intake) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
     addCommands(new RunLoader(loader), new RunIntake(intake));
   }
 }

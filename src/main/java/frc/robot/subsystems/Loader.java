@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class Loader extends SubsystemBase {
-
   CANSparkMax loaderMotor;
+  private boolean proxSensorEnabled = false;
   private AnalogInput ballDetector;
   /** Creates a new Loader. */
   public Loader() {
@@ -32,18 +32,26 @@ public class Loader extends SubsystemBase {
   }
 
   public boolean seeBall(){
-    if (ballDetector.getVoltage() < 1.5){
+    if (proxSensorEnabled && ballDetector.getVoltage() < 1.5){
       return true;
     }
     return false;
   }
 
-  public void reverseLoader(){
+  public void reverseLoader() {
     loaderMotor.set(0.5);
   }
 
-  public void stopLoader(){
+  public void stopLoader() {
     loaderMotor.set(0);
+  }
+
+  public boolean isRunning() {
+    return Math.abs(loaderMotor.getAppliedOutput()) > 0;
+  }
+
+  public void enableProxSensor() {
+    proxSensorEnabled = true;
   }
 
   @Override
@@ -51,7 +59,7 @@ public class Loader extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-public double getAppliedOutput() {
-    return loaderMotor.getAppliedOutput();
-}
+  public double getAppliedOutput() {
+      return loaderMotor.getAppliedOutput();
+  }
 }

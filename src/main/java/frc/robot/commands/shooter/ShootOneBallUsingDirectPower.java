@@ -14,25 +14,24 @@ public class ShootOneBallUsingDirectPower extends CommandBase {
   private Loader mLoader;
   private double mpower;
   private double mrpm;
-  private boolean isDone = false;
-
-  private Timer timer;
+  private boolean isDone;
+  private Timer shootTimer;
   /** Creates a new ShootOneBallUsingDirectPower. */
   public ShootOneBallUsingDirectPower(Shooter shooter, Loader loader, double power, double rpm) {
     mshooter = shooter;
     mLoader = loader;
     mpower = power;
     mrpm = rpm;
-    timer = new Timer();
+    isDone = false;
+    shootTimer = new Timer();
 
     addRequirements(mshooter);
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer.reset();
+    shootTimer.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -52,15 +51,18 @@ public class ShootOneBallUsingDirectPower extends CommandBase {
     }
     
     if(mshooter.atSpeed() && mLoader.getAppliedOutput() < 0) {
-      // mshooter.currentWatch(); unreliable
-      if (timer.hasElapsed(0.8)) {
-        mshooter.addBallShot();
-      }
+      shootTimer.start();
     }
 
+    if (shootTimer.hasElapsed(1.75)) {
+      isDone = true;
+    }
+
+    /* previous code with currentWatch
     if (mshooter.getBallsShot() == 1) {
       isDone = true;
     }
+    */
 
   }
 
@@ -69,6 +71,8 @@ public class ShootOneBallUsingDirectPower extends CommandBase {
   public void end(boolean interrupted) {
     mshooter.setPower(0);
     mLoader.stopLoader();
+    shootTimer.stop();
+    shootTimer.reset();
     mshooter.resetBallShot();
   }
 
